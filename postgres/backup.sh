@@ -6,6 +6,6 @@ echo -e "Backing up all PostgreSQL databases.\n";
 
 mkdir $DIR/temp
 
-sudo -i -u postgres pg_dumpall > $DIR/temp/dumpall.sql
+sudo -u postgres pg_dumpall > $DIR/temp/dumpall.sql
 
 rm -r $DIR/temp
