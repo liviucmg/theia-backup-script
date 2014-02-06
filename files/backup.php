@@ -4,7 +4,7 @@
 $defaults = [
 	'--debug' => false
 ];
-$arguments = [];
+$arguments = $defaults;
 foreach ($argv as $a) {
 	$arguments[$a] = true;
 }
