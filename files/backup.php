@@ -1,8 +1,23 @@
 <?php
+
+// Get arguments.
+$defaults = [
+	'--debug' => false
+];
+$arguments = [];
+foreach ($argv as $a) {
+	$arguments[$a] = true;
+}
+
+// Get configuration file.
 $config = json_decode(file_get_contents(__DIR__ . '/backup.json'), true);
 
+// Get credentials.
 $credentialsCmd = "";
-if (isset($config['AWS_ACCESS_KEY_ID'])) {
+if (
+	isset($config['AWS_ACCESS_KEY_ID']) &&
+	isset($config['AWS_SECRET_ACCESS_KEY'])
+) {
 	$credentialsCmd .= "
 		export AWS_ACCESS_KEY_ID='$config[AWS_ACCESS_KEY_ID]'
 		export AWS_SECRET_ACCESS_KEY='$config[AWS_SECRET_ACCESS_KEY]'
@@ -24,10 +39,15 @@ if (isset($config['passphrase'])) {
 $encryptionKey = $config['encryptionKey'];
 $signatureKey = $config['signatureKey'];
 
-# How long to keep backups for
-$OLDER_THAN = '2M';
+$defaults = [
+	'src' => '',
+	'dest' => '',
+	'removeOlderThan' => null
+];
 
 foreach ($config['backups'] as $backup) {	
+	$backup = array_merge($defaults, $backup);
+
 	echo "Backup for \"" . $backup['src'] . "\" has started.\n";
 	
 	// Partial or full backup
@@ -44,16 +64,19 @@ foreach ($config['backups'] as $backup) {
 	$additionalOptions = implode(' ', $additionalOptions);;
 
 	// Remove old backups.
-	echo "- Removing old backups.\n";
-	$cmd = "
-		$credentialsCmd
-		duplicity \
-			remove-older-than $OLDER_THAN \
-			$additionalOptions \
-			" . escapeshellarg($backup['dest']) . " \
-			2>&1
-	";
-	echo shell_exec($cmd);
+	if ($backup['removeOlderThan']) {
+		echo "- Removing old backups.\n";
+		$cmd = "
+			$credentialsCmd
+			duplicity \
+				remove-older-than " . escapeshellarg($backup['removeOlderThan']) . " \
+				--force \
+				$additionalOptions \
+				" . escapeshellarg($backup['dest']) . " \
+				2>&1
+		";
+		echo shell_exec($cmd);
+	}
 	
 	// Set exclusions
 	$exclude = [];
@@ -79,5 +102,9 @@ foreach ($config['backups'] as $backup) {
 			" . escapeshellarg($backup['src']) . " " . escapeshellarg($backup['dest']) . " \
 			2>&1
 	";
-	echo shell_exec($cmd);
+	if ($arguments['--debug']) {
+		passthru($cmd);
+	} else {
+		shell_exec($cmd);
+	}
 }
