@@ -5,7 +5,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 (
 
         # Do not allow more than one instance of this script.
-        flock -x 200 || exit 1
+        flock -x -n 200 || exit 1
 
         # Create MySQL backup.
         $DIR/mysql/backup.sh
