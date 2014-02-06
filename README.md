@@ -1,6 +1,6 @@
 # Theia Backup Script
 
-I use this set of scripts to backup my website files, MySQL databases and PostgreSQL databases. It uses [Duplicity](http://duplicity.nongnu.org/) as the backend, so the files can be backed up virtually anywhere (FTP, Amazon S3, etc.). The scripts are run on the source server, sending the files to the destination server.
+I use this set of scripts to backup my website files, MySQL databases and PostgreSQL databases. It uses [Duplicity](http://duplicity.nongnu.org/) as the backend, so the files can be backed up virtually anywhere (FTP, Amazon S3, etc.). The scripts are run on the source server, sending the files to the destination (backup) server.
 
 Dependencies: Bash, PHP 5.4, Duplicity, Flock.
 
