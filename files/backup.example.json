@@ -1,14 +1,24 @@
 {
 	"AWS_ACCESS_KEY_ID": "",
 	"AWS_SECRET_ACCESS_KEY": "",
-	"passphrase": "",
-	"encryptionKey": "",
-	"signatureKey": "",
+	"passphrase": "the GPG passphrase",
+	"encryptionKey": "the GPG key, something like 05AB3DF5",
+	"signatureKey": "the GPG key, something like 05AB3DF5",
 	"backups": [
+		{
+			"src": "../mysql/temp",
+			"dest": "s3://s3-eu-west-1.amazonaws.com/mysql",
+			"removeOlderThan": "2M"
+		},
+		{
+			"src": "../postgres/temp",
+			"dest": "s3://s3-eu-west-1.amazonaws.com/postgres",
+			"removeOlderThan": "2M"
+		}
 		{
 			"src": "/var/www/website",
 			"dest": "s3://s3-eu-west-1.amazonaws.com/website",
-			"removeOlderThan": "2M"
+			"removeOlderThan": "2M",
 			"exclude": [
 				"/var/www/website/cache"
 			]
