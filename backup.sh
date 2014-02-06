@@ -8,10 +8,10 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
         flock -x -n 200 || exit 1
 
         # Create MySQL backup.
-        $DIR/mysql/backup.sh
+        php -f "$DIR/mysql/backup.php"
 
         # Create PostgreSQL backup.
-        $DIR/postgresql/backup.sh
+        $DIR/postgres/backup.sh
 
         # Backup everything to S3.
         php -f "$DIR/files/backup.php"
