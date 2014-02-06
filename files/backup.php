@@ -10,7 +10,11 @@ foreach ($argv as $a) {
 }
 
 // Get configuration file.
-$config = json_decode(file_get_contents(__DIR__ . '/backup.json'), true);
+$file = __DIR__ . '/backup.json';
+if (!file_exists($file)) {
+	return;
+}
+$config = json_decode(file_get_contents($file), true);
 
 // Get credentials.
 $credentialsCmd = "";
