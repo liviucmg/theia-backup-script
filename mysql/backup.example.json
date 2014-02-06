@@ -1,0 +1,13 @@
+{
+	"username": "mysql_username",
+	"password": "mysql_backup",
+	"excludeDatabases": [
+		"performance_schema",
+		"information_schema"
+	],
+	"excludeTables": [
+		"mysql.innodb_index_stats",
+		"mysql.innodb_table_stats"
+	],
+	"destination": "temp"
+}

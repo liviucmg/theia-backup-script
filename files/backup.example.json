@@ -1,0 +1,17 @@
+{
+	"AWS_ACCESS_KEY_ID": "",
+	"AWS_SECRET_ACCESS_KEY": "",
+	"passphrase": "",
+	"encryptionKey": "",
+	"signatureKey": "",
+	"backups": [
+		{
+			"src": "/var/www/website",
+			"dest": "s3://s3-eu-west-1.amazonaws.com/website",
+			"removeOlderThan": "2M"
+			"exclude": [
+				"/var/www/website/cache"
+			]
+		}
+	]
+}
