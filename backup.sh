@@ -16,4 +16,10 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
         # Backup everything to S3.
         php -f "$DIR/files/backup.php"
 
+        # Clean up MySQL backup.
+        php -f "$DIR/mysql/cleanup.php"
+
+        # Clean up PostgreSQL backup.
+        $DIR/postgres/cleanup.sh
+
 ) 200>${DIR}/backup.lock
