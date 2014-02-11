@@ -45,12 +45,16 @@ $signatureKey = $config['signatureKey'];
 
 $defaults = [
 	'src' => '',
-	'dest' => '',
+	'dest' => [],
 	'removeOlderThan' => null
 ];
 
 foreach ($config['backups'] as $backup) {	
 	$backup = array_merge($defaults, $backup);
+	
+	if (!is_array($backup['dest'])) {
+		$backup['dest'] = [$backup['dest']];
+	}
 
 	echo "Backup for \"" . $backup['src'] . "\" has started.\n";
 	
@@ -65,23 +69,8 @@ foreach ($config['backups'] as $backup) {
 	if (isset($backup['sshOptions'])) {
 		$additionalOptions[] = "--ssh-options=\"" . $backup['sshOptions'] . "\"";
 	}
-	$additionalOptions = implode(' ', $additionalOptions);;
-
-	// Remove old backups.
-	if ($backup['removeOlderThan']) {
-		echo "- Removing old backups.\n";
-		$cmd = "
-			$credentialsCmd
-			duplicity \
-				remove-older-than " . escapeshellarg($backup['removeOlderThan']) . " \
-				--force \
-				$additionalOptions \
-				" . escapeshellarg($backup['dest']) . " \
-				2>&1
-		";
-		echo shell_exec($cmd);
-	}
-	
+	$additionalOptions = implode(' ', $additionalOptions);
+		
 	// Set exclusions
 	$exclude = [];
 	if (array_key_exists('exclude', $backup)) {
@@ -90,25 +79,43 @@ foreach ($config['backups'] as $backup) {
 		}
 	}
 	$exclude = implode(' ', $exclude);
-	
-	// Backup files
-	echo "- Backing up to \"" . $backup['dest'] . "\".\n";
-	$cmd = "
-		$credentialsCmd
-		duplicity \
-			$full \
-			$exclude \
-			--encrypt-key=$encryptionKey \
-			--sign-key=$signatureKey \
-			--volsize=250 \
-			--s3-use-new-style \
-			$additionalOptions \
-			" . escapeshellarg($backup['src']) . " " . escapeshellarg($backup['dest']) . " \
-			2>&1
-	";
-	if ($arguments['--debug']) {
-		passthru($cmd);
-	} else {
-		shell_exec($cmd);
+
+	// For each backup destination.
+	foreach ($backup['dest'] as $dest) {
+		// Remove old backups.
+		if ($backup['removeOlderThan']) {
+			echo "- Removing old backups.\n";
+			$cmd = "
+				$credentialsCmd
+				duplicity \
+					remove-older-than " . escapeshellarg($backup['removeOlderThan']) . " \
+					--force \
+					$additionalOptions \
+					" . escapeshellarg($dest) . " \
+					2>&1
+			";
+			echo shell_exec($cmd);
+		}
+		
+		// Backup files
+		echo "- Backing up to \"" . $dest . "\".\n";
+		$cmd = "
+			$credentialsCmd
+			duplicity \
+				$full \
+				$exclude \
+				--encrypt-key=$encryptionKey \
+				--sign-key=$signatureKey \
+				--volsize=250 \
+				--s3-use-new-style \
+				$additionalOptions \
+				" . escapeshellarg($backup['src']) . " " . escapeshellarg($dest) . " \
+				2>&1
+		";
+		if ($arguments['--debug']) {
+			passthru($cmd);
+		} else {
+			shell_exec($cmd);
+		}
 	}
 }
