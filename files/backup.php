@@ -2,7 +2,7 @@
 
 // Get arguments.
 $defaults = [
-	'--debug' => false
+	'debug' => false
 ];
 $arguments = $defaults;
 foreach ($argv as $a) {
@@ -112,7 +112,7 @@ foreach ($config['backups'] as $backup) {
 				" . escapeshellarg($backup['src']) . " " . escapeshellarg($dest) . " \
 				2>&1
 		";
-		if ($arguments['--debug']) {
+		if ($arguments['debug']) {
 			passthru($cmd);
 		} else {
 			shell_exec($cmd);
