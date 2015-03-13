@@ -84,10 +84,12 @@ foreach ($config['backups'] as $backup) {
 	foreach ($backup['dest'] as $dest) {
 		// Remove old backups.
 		if ($backup['removeOlderThan']) {
-			echo "- Removing old backups.\n";
+			echo "- Removing old backups from \"" . $dest . "\".\n";
 			$cmd = "
 				$credentialsCmd
 				duplicity \
+					--encrypt-key=$encryptionKey \
+					--sign-key=$signatureKey \
 					remove-older-than " . escapeshellarg($backup['removeOlderThan']) . " \
 					--force \
 					$additionalOptions \
@@ -113,6 +115,7 @@ foreach ($config['backups'] as $backup) {
 				2>&1
 		";
 		if ($arguments['debug']) {
+                        echo "Executing \"$cmd\".\n";
 			passthru($cmd);
 		} else {
 			shell_exec($cmd);
